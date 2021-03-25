@@ -20,6 +20,9 @@ async def on_message(message):
   if message.author == client.user:
     return
   content_arr = message.content.split(' ')
+  if content_arr[0] == '!getvid':
+    await do_generic_youtube_search(' '.join(content_arr[1:]), message)
+    return
   matching_substr_spotify = None
   matching_substr_apple = None
   for substr in content_arr:
@@ -42,7 +45,7 @@ async def on_message(message):
     channel = message.channel
     new_message = await channel.fetch_message(message.id)
     if new_message.embeds:
-      await do_youtube_match_for_apple(message.embeds[0].title, message)
+      await do_generic_youtube_search(message.embeds[0].title, message)
   
 
 async def do_youtube_match_for_spotify(url, message):
@@ -59,7 +62,7 @@ async def do_youtube_match_for_spotify(url, message):
   except:
     await message.channel.send('Unable to find Youtube match')
 
-async def do_youtube_match_for_apple(search_query, message):
+async def do_generic_youtube_search(search_query, message):
   try:
     video_url = youtubeWrapper.get_youtube_video(search_query)
     await message.channel.send(video_url)
